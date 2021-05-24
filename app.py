@@ -28,8 +28,10 @@ def run():
         print('成功进入明日预约选座')
         print('开始准备抢座')
         print('<(￣︶￣)↗[GO!]')
+        function.fecth()
     else:
         print('进入明日预约选座失败，请联系开发者email:luoshenshen@buaa.edu.cn或者重试！')
+
 
 if __name__ == "__main__":
     run()
