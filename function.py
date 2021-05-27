@@ -153,6 +153,9 @@ def fecth():
         result = session_get(url, browser_tools.layout_header)
 
         js_result = js_code.obtain_js(result.text)
+
+        print(js_result)
+
         request_js = js_result[1]
         need_js = re.findall(r"layout/(.+?).js", request_js)
         print("选座js已获取：" + need_js[0])
