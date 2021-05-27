@@ -6,20 +6,24 @@
 @ tool: PyCharm
 @ time: 2021/5/24 1:44
 '''
+import os
 import requests
 import time
 import browser_tools
 import re
 import js_code
 import baidu
+import timer
 from aip import AipOcr
 
 requests.packages.urllib3.disable_warnings()
 requests_with_session = requests.Session()
 
-def session_get(url,header):
+
+def session_get(url, header):
     requests.adapters.DEFAULT_RETRIES = 5
-    return requests_with_session.get(url=url,headers=header,allow_redirects=True,verify=False)
+    return requests_with_session.get(url=url, headers=header, allow_redirects=True, verify=False)
+
 
 def floors():
     print('''
@@ -124,18 +128,21 @@ def floors():
         floor = str(11124)
     elif floor == "1":
         exit(1)
-    return  floor
+    return floor
 
-def get_floor_url(url,floor):
-    return url+str(floor)+'.html&'+str(int(time.time()))
 
-def get_tomorrow_floor_url(url,floor):
-    return url+str(floor)
+def get_floor_url(url, floor):
+    return url + str(floor) + '.html&' + str(int(time.time()))
+
+
+def get_tomorrow_floor_url(url, floor):
+    return url + str(floor)
+
 
 def get_seat(html):
     xys = re.findall('data-key="(.*)" style="left:', html)
     seats = re.findall('<em>(.*)</em>', html)
-    return xys,seats
+    return xys, seats
 
 
 def fecth():
@@ -152,7 +159,7 @@ def fecth():
         verify_code = js_code.verify_code_get(need_js[0])
         js = str(verify_code)
         print("选座js匹配验证码:" + verify_code)
-
+        headers = browser_tools.imgs_header(floor)
         xys, seats = get_seat(result.text)
         keys = {}
         for i, j in zip(xys, seats):
@@ -164,26 +171,57 @@ def fecth():
 
         key = input("请输入选座位置：")
         seats = keys.pop(key)
-        target_url = browser_tools.today_url+str(floor)+'&'+str(js)+'='+str(seats)+'&yzm='
-        result = session_get(target_url,browser_tools.today_header).text
-        print("选座动作：")
-        print(target_url)
-        print("选座结果：")
-        print(result)
+
+        result = ''
+        while '预定座位成功' not in result:
+
+            img = session_get(browser_tools.img_url, header=headers).content
+            with open('./code.jpg', 'wb') as f:
+                f.write(img)
+            # 识别验证码
+            client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
+            size = os.path.getsize('./code.jpg')
+
+            image = baidu.get_file_content('code.jpg')
+            client.basicAccurate(image)
+            options = {}
+            options["detect_direction"] = "true"
+            options["probability"] = "true"
+            word = client.basicAccurate(image, options)
+            li = word.get('words_result')
+
+            if 0 == len(li) or size < 1500:
+                continue
+
+            code = li[0]["words"]
+            print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
+            while len(code) != 4:
+                img = session_get(browser_tools.img_url, header=browser_tools.imgs_header(floor)).content
+                with open('./code.jpg', 'wb') as f:
+                    f.write(img)
+                size = os.path.getsize('./code.jpg')
+                image = baidu.get_file_content('code.jpg')
+                client.basicAccurate(image)
+                word = client.basicAccurate(image, options)
+                li = word.get('words_result')
+                if 0 == len(li) or size < 1500:
+                    continue
+                code = li[0]["words"]
+                print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
+
+            target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm=' + code
+            result = session_get(target_url, browser_tools.today_header).text
+            print("选座动作：")
+            print(target_url)
+            print("选座结果：")
+            print(result)
 
     elif options == str(0):
         floor = floors()
-        url = get_tomorrow_floor_url(browser_tools.tomorrow_floor_url, floor)
-        result = session_get(url, browser_tools.tomorrow_header)
+        url = get_floor_url(browser_tools.floor_url, floor)
+        result = session_get(url, browser_tools.layout_header)
 
-        js_result = js_code.obtain_js(result.text)
-        request_js = js_result[1]
-        need_js = re.findall(r"layout/(.+?).js", request_js)
-        print("选座js已获取：" + need_js[0])
-        verify_code = js_code.verify_code_get(need_js[0])
-        js = str(verify_code)
-        print("选座js匹配验证码:" + verify_code)
-
+        # 获取座位坐标
         xys, seats = get_seat(result.text)
         keys = {}
         for i, j in zip(xys, seats):
@@ -196,61 +234,87 @@ def fecth():
         key = input("请输入选座位置：")
         seats = keys.pop(key)
 
-        img_header = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
-            'Connection': 'keep-alive',
-            'Connection': 'keep-alive',
-            'Cache-Control': 'max-age=0',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200)',
-            'Referer': 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid=10065'+str(floor),
-            'Cookie': 'wechatSESS_ID=' + str(
-                browser_tools.input_session),
-            'Host': 'wechat.laixuanzuo.com',
-            'sec-ch-ua':'" Not A;Brand";v="99", "Chromium";v="90", "Microsoft Edge";v="90"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site':'none',
-            'sec-fetch-user':'?1',
-            'upgrade-insecure-requests':'1',
-        }
+        print("座位坐标已获取:", seats)
+        print("开始计时选座: 开始.........")
 
-        img = session_get(browser_tools.img_url,header=img_header).content
-        with open('./code.jpg', 'wb') as f:
-            f.write(img)
+        flagCookie = 0
+        # 计时选座 小时拦截器
+        hour, min, sec = timer.times()
+        while int(hour) < int(19 and (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)) > 0):
+            print("准备抢座:预定时间 19:50", " 当前时间:", hour, ":", min, '继续等待',
+                  (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)), '秒')
+            time.sleep(0.5)
+            hour, min, sec = timer.times()
+            flagCookie += 1
+            if flagCookie == 400:
+                session_get(browser_tools.index_url, browser_tools.index_header)
+                flagCookie = 0
 
+        # 计时选座 分钟拦截器
+        while int(min) < int(50) and (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)) > 0:
+            print("准备抢座:预定时间 19:50", " 当前时间:", hour, ":", min, '继续等待',
+                  (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)), '秒')
+            time.sleep(0.5)
+            hour, min, sec = timer.times()
+            flagCookie += 1
+            if flagCookie == 400:
+                html = session_get(browser_tools.index_url, browser_tools.index_header).text
+                print(html)
+                flagCookie = 0
+        result = ''
 
-        client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
-        image = baidu.get_file_content('code.jpg')
+        while '预定座位成功' not in result:
+            # 最后一次刷新
+            tomorrow_floor_url = get_tomorrow_floor_url(browser_tools.tomorrow_floor_url, floor)
+            tomorrow_result = session_get(tomorrow_floor_url, browser_tools.tomorrow_header)
 
-        client.basicAccurate(image)
+            # 获取js验证
+            js_result = js_code.obtain_js(tomorrow_result.text)
+            request_js = js_result[1]
+            need_js = re.findall(r"layout/(.+?).js", request_js)
+            verify_code = js_code.verify_code_get(need_js[0])
+            js = str(verify_code)
 
-        options = {}
-        options["detect_direction"] = "true"
-        options["probability"] = "true"
-
-        word = client.basicAccurate(image, options)
-        li = word.get('words_result')
-        code = li[0]["words"]
-        print('(o゜▽゜)o☆[BINGO!]',"\tCNN卷积神经网络自动判别验证码为：",code)
-        while len(code) != 4:
-            img = session_get(browser_tools.img_url, header=img_header).content
+            # 验证码获取
+            headers = browser_tools.imgs_header(floor)
+            img = session_get(browser_tools.img_url, header=headers).content
             with open('./code.jpg', 'wb') as f:
                 f.write(img)
+
+            # 识别验证码
+            client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
+            size = os.path.getsize('./code.jpg')
             image = baidu.get_file_content('code.jpg')
             client.basicAccurate(image)
+            options = {}
+            options["detect_direction"] = "true"
+            options["probability"] = "true"
             word = client.basicAccurate(image, options)
             li = word.get('words_result')
+
+            if 0 == len(li) or size < 1500:
+                continue
+
             code = li[0]["words"]
-            print("CNN卷积神经网络自动判别验证码为：", code)
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
+            while len(code) != 4:
+                img = session_get(browser_tools.img_url, header=headers).content
+                with open('./code.jpg', 'wb') as f:
+                    f.write(img)
 
-        target_url = browser_tools.tomorrow_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm='+code
-        result = session_get(target_url, browser_tools.today_header).text
-        print("选座动作：")
-        print(target_url)
-        print("选座结果：")
-        print(result)
+                size = os.path.getsize('./code.jpg')
+                image = baidu.get_file_content('code.jpg')
+                client.basicAccurate(image)
+                word = client.basicAccurate(image, options)
+                li = word.get('words_result')
 
+                if 0 == len(li) or size < 1500:
+                    continue
+                code = li[0]["words"]
+                print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
+
+            # 各种安全已经验证，开始抢座
+            target_url = browser_tools.tomorrow_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm=' + code
+            result = session_get(target_url, browser_tools.today_header).text
+            print("选座结果:")
+            print(result)

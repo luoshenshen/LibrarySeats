@@ -12,10 +12,12 @@ import requests
 import execjs
 import browser_tools
 
+
 def obtain_js(html):
     js = '<script src="(.*?)"'
     href = re.compile(js, re.S).findall(html)
     return href
+
 
 def verify_code_get(jsname):
     '''代码不麻烦，主要是分析js花了些时间'''
@@ -41,5 +43,6 @@ def verify_code_get(jsname):
 
     return docjs.eval(resultcommond)
 
+
 def network(url):
-    return function.session_get(url=url,header=browser_tools.js_header).text
+    return function.session_get(url=url, header=browser_tools.js_header).text

@@ -18,6 +18,7 @@ def run():
         print('成功进入来选座系统')
         print('(￣▽￣)～■干杯□～(￣▽￣)')
     else:
+        print(result.text)
         print('进入来选座系统失败，请联系开发者email:luoshenshen@buaa.edu.cn或者重试！')
 
     result = function.session_get(browser_tools.center_url, browser_tools.center_header)
