@@ -21,7 +21,7 @@ tomorrow_floor_url = 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/
 tomorrow = 'https://wechat.laixuanzuo.com/index.php/prereserve/index.html'
 tomorrow_url = 'https://wechat.laixuanzuo.com/index.php/prereserve/save/libid='
 
-img_url = 'https://wechat.laixuanzuo.com/index.php/misc/verify'
+img_url = 'https://wechat.laixuanzuo.com/index.php/misc/verify.html'
 
 index_header = {
     'Host':'wechat.laixuanzuo.com',
@@ -110,34 +110,6 @@ js_header = {
     'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6',
 }
 
-tomorrow_header = {
-    'Host':'wechat.laixuanzuo.com',
-    'Connection':'keep-alive',
-    'Cache-Control':'max-age=0',
-    'Upgrade-Insecure':'1',
-    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200)',
-    'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Referer':'https://wechat.laixuanzuo.com/index.php/prereserve/index.html',
-    'Accept-Encoding':'gzip, deflate',
-    'Accept-Language':'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4',
-    'Cookie':'wechatSESS_ID='+str(input_session)+'; FROM_TYPE=weixin; Hm_lvt_7838cef374eb966ae9ff502c68d6f098='+input_time+','+str(int(input_time)+20)+'; Hm_lpvt_7838cef374eb966ae9ff502c68d6f098='+input_time,
-    'If-Modified':'Thu, 01 Jan 1970 00:00:00GMT',
-}
-
-img_header = {
-    'Host':'wechat.laixuanzuo.com',
-    'Connection':'keep-alive',
-    'Cache-Control':'max-age=0',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200)',
-    'Accept': 'image/webp,image/*,*/*;q=0.8',
-    'Referer':'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid=10065',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4',
-    'Cookie': 'wechatSESS_ID=' + str(
-        input_session) + '; FROM_TYPE=weixin; Hm_lvt_7838cef374eb966ae9ff502c68d6f098=' + input_time + ',' + str(
-        int(input_time) + 20) + '; Hm_lpvt_7838cef374eb966ae9ff502c68d6f098=' + input_time,
-}
-
 tomorrow_index_header = {
     'Host': 'wechat.laixuanzuo.com',
     'Connection': 'keep-alive',
@@ -173,3 +145,60 @@ def imgs_header(floor):
         'upgrade-insecure-requests': '1',
     }
     return imgs_header
+
+tomorrow_time = str(int(time.time()))
+tomorrow_var = str(int(tomorrow_time) - 10)
+
+def get_tomorrow_header():
+    tomorrow_headers = {
+        'Host': 'wechat.laixuanzuo.com',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Cache-Control': 'max-age=0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Referer': 'https://wechat.laixuanzuo.com/index.php/reserve/index.html',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4',
+        'Cookie': 'wechatSESS_ID='+str(input_session)+';'
+                  ' FROM_TYPE=weixin; Hm_lvt_7838cef374eb966ae9ff502c68d6f098='+str(tomorrow_var)+';'
+                  ' Hm_lpvt_7838cef374eb966ae9ff502c68d6f098='+str(tomorrow_time),
+
+    }
+    return tomorrow_headers
+
+def tomorrow_imgs_header():
+    tomorrow_img_header = {
+        'Host': 'wechat.laixuanzuo.com',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'max-age=0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200',
+        'Accept': 'image/webp,image/*,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4',
+        'Referer': 'https://wechat.laixuanzuo.com/index.php/prereserve/index.html',
+        'Cookie': 'wechatSESS_ID='+str(input_session)+
+                  '; FROM_TYPE=weixin; Hm_lvt_7838cef374eb966ae9ff502c68d6f098='
+                  +str(tomorrow_var)+'; Hm_lpvt_7838cef374eb966ae9ff502c68d6f098='
+                  +str(tomorrow_time),
+    }
+    return tomorrow_img_header
+
+
+def img_header():
+    iheader = {
+        'Host': 'static.wechat.laixuanzuo.com',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'max-age=0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200) ',
+        'Accept': 'image/webp,image/*,*/*;q=0.8',
+        'Referer': 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid=10065',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4',
+        'Cookie': 'wechatSESS_ID=' + str(input_session) +
+                  '; FROM_TYPE=weixin; Hm_lvt_7838cef374eb966ae9ff502c68d6f098='
+                  + str(tomorrow_var) + '; Hm_lpvt_7838cef374eb966ae9ff502c68d6f098='
+                  + str(tomorrow_time),
+    }
+    return iheader
+

@@ -10,8 +10,9 @@ import re
 import function
 import browser_tools
 
+
 def run():
-    result = function.session_get(browser_tools.index_url,browser_tools.index_header)
+    result = function.session_get(browser_tools.index_url, browser_tools.index_header)
     if '来选座' in result.text:
         print('(o゜▽゜)o☆')
         print('尝试进入选座系统')
@@ -23,14 +24,13 @@ def run():
 
     result = function.session_get(browser_tools.center_url, browser_tools.center_header)
     nick = re.findall('<div class="nick">(.*)</div>', result.text)[0]
-    print('(๑•̀ㅂ•́)و✧'+'你好呀：--------------------------'+nick)
+    print('(๑•̀ㅂ•́)و✧' + '你好呀：--------------------------' + nick)
     result = function.session_get(browser_tools.prereserve_url, browser_tools.prereserve_header)
     if nick in result.text or "预约明天的座位" in result.text:
         print('成功进入明日预约选座')
         print('开始准备抢座')
         print('<(￣︶￣)↗[GO!]')
-        print("进入fetch")
-        function.fecth()
+        function.fecth(nick + '.jpg')
     else:
         print('进入明日预约选座失败，请联系开发者email:luoshenshen@buaa.edu.cn或者重试！')
 

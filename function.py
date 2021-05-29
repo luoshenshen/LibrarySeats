@@ -145,7 +145,7 @@ def get_seat(html):
     return xys, seats
 
 
-def fecth():
+def fecth(image_name):
     options = input("输入：1，进入抢座，输入：0，预选明日:")
     if options == str(1):
         floor = floors()
@@ -153,16 +153,12 @@ def fecth():
         result = session_get(url, browser_tools.layout_header)
 
         js_result = js_code.obtain_js(result.text)
-
-        print(js_result)
-
         request_js = js_result[1]
         need_js = re.findall(r"layout/(.+?).js", request_js)
         print("选座js已获取：" + need_js[0])
         verify_code = js_code.verify_code_get(need_js[0])
         js = str(verify_code)
         print("选座js匹配验证码:" + verify_code)
-        headers = browser_tools.imgs_header(floor)
         xys, seats = get_seat(result.text)
         keys = {}
         for i, j in zip(xys, seats):
@@ -178,14 +174,19 @@ def fecth():
         result = ''
         while '预定座位成功' not in result:
 
-            img = session_get(browser_tools.img_url, header=headers).content
-            with open('./code.jpg', 'wb') as f:
+            img_url = browser_tools.img_url
+            hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header()).headers
+            if 'Location' in hr.keys():
+                img_url = hr.pop('Location')
+
+            img = session_get(img_url, header=browser_tools.img_header()).content
+            with open(image_name, 'wb') as f:
                 f.write(img)
             # 识别验证码
             client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
-            size = os.path.getsize('./code.jpg')
+            size = os.path.getsize(image_name)
 
-            image = baidu.get_file_content('code.jpg')
+            image = baidu.get_file_content(image_name)
             client.basicAccurate(image)
             options = {}
             options["detect_direction"] = "true"
@@ -199,11 +200,15 @@ def fecth():
             code = li[0]["words"]
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
             while len(code) != 4:
-                img = session_get(browser_tools.img_url, header=browser_tools.imgs_header(floor)).content
-                with open('./code.jpg', 'wb') as f:
+                img_url = browser_tools.img_url
+                hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header()).headers
+                if 'Location' in hr.keys():
+                    img_url = hr.pop('Location')
+                img = session_get(img_url, header=browser_tools.img_header()).content
+                with open(image_name, 'wb') as f:
                     f.write(img)
-                size = os.path.getsize('./code.jpg')
-                image = baidu.get_file_content('code.jpg')
+                size = os.path.getsize(image_name)
+                image = baidu.get_file_content(image_name)
                 client.basicAccurate(image)
                 word = client.basicAccurate(image, options)
                 li = word.get('words_result')
@@ -218,6 +223,8 @@ def fecth():
             print(target_url)
             print("选座结果：")
             print(result)
+            if '预定成功' in result or '操作失败' in result:
+                break
 
     elif options == str(0):
         floor = floors()
@@ -244,7 +251,7 @@ def fecth():
         # 计时选座 小时拦截器
         hour, min, sec = timer.times()
         while int(hour) < int(19 and (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)) > 0):
-            print("准备抢座:预定时间 19:50", " 当前时间:", hour, ":", min, '继续等待',
+            print('已锁定该楼层:', key, '号座位', "准备抢座:预定时间 19:50", " 当前时间:", hour, ":", min, '继续等待',
                   (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)), '秒')
             time.sleep(0.5)
             hour, min, sec = timer.times()
@@ -255,7 +262,7 @@ def fecth():
 
         # 计时选座 分钟拦截器
         while int(min) < int(50) and (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)) > 0:
-            print("准备抢座:预定时间 19:50", " 当前时间:", hour, ":", min, '继续等待',
+            print('已锁定该楼层:', key, '号座位', "准备抢座:预定时间 19:50", " 当前时间:", hour, ":", min, '继续等待',
                   (int(19 - hour) * 3600 + int((49 - min)) * 60 + (60 - sec)), '秒')
             time.sleep(0.5)
             hour, min, sec = timer.times()
@@ -268,8 +275,13 @@ def fecth():
 
         while '预定座位成功' not in result:
             # 最后一次刷新
-            tomorrow_floor_url = get_tomorrow_floor_url(browser_tools.tomorrow_floor_url, floor)
-            tomorrow_result = session_get(tomorrow_floor_url, browser_tools.tomorrow_header)
+            img_url = browser_tools.img_url
+            tomorrow_result = session_get(browser_tools.tomorrow, browser_tools.get_tomorrow_header())
+
+            # 验证码获取
+            hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header()).headers
+            if 'Location' in hr.keys():
+                img_url = hr.pop('Location')
 
             # 获取js验证
             js_result = js_code.obtain_js(tomorrow_result.text)
@@ -278,16 +290,14 @@ def fecth():
             verify_code = js_code.verify_code_get(need_js[0])
             js = str(verify_code)
 
-            # 验证码获取
-            headers = browser_tools.imgs_header(floor)
-            img = session_get(browser_tools.img_url, header=headers).content
-            with open('./code.jpg', 'wb') as f:
+            img = session_get(img_url, header=browser_tools.img_header()).content
+            with open(image_name, 'wb') as f:
                 f.write(img)
 
             # 识别验证码
             client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
-            size = os.path.getsize('./code.jpg')
-            image = baidu.get_file_content('code.jpg')
+            size = os.path.getsize(image_name)
+            image = baidu.get_file_content(image_name)
             client.basicAccurate(image)
             options = {}
             options["detect_direction"] = "true"
@@ -301,12 +311,17 @@ def fecth():
             code = li[0]["words"]
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
             while len(code) != 4:
-                img = session_get(browser_tools.img_url, header=headers).content
-                with open('./code.jpg', 'wb') as f:
+                img_url = browser_tools.img_url
+                hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header()).headers
+                if 'Location' in hr.keys():
+                    img_url = hr.pop('Location')
+
+                img = session_get(img_url, header=browser_tools.img_header()).content
+                with open(image_name, 'wb') as f:
                     f.write(img)
 
-                size = os.path.getsize('./code.jpg')
-                image = baidu.get_file_content('code.jpg')
+                size = os.path.getsize(image_name)
+                image = baidu.get_file_content(image_name)
                 client.basicAccurate(image)
                 word = client.basicAccurate(image, options)
                 li = word.get('words_result')
@@ -321,3 +336,5 @@ def fecth():
             result = session_get(target_url, browser_tools.today_header).text
             print("选座结果:")
             print(result)
+            if '成功' in result or '失败' in result or '满' in result:
+                break
