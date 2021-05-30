@@ -132,7 +132,7 @@ def imgs_header(floor):
         'Connection': 'keep-alive',
         'Cache-Control': 'max-age=0',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200)',
-        'Referer': 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid=10065' + str(
+        'Referer': 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid=' + str(
             floor),
         'Cookie': 'wechatSESS_ID=' + str(input_session),
         'Host': 'wechat.laixuanzuo.com',
@@ -185,14 +185,14 @@ def tomorrow_imgs_header():
     return tomorrow_img_header
 
 
-def img_header():
+def img_header(floor):
     iheader = {
         'Host': 'static.wechat.laixuanzuo.com',
         'Connection': 'keep-alive',
         'Cache-Control': 'max-age=0',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36 QBCore/4.0.1326.400 QQBrowser/9.0.2524.400 Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2875.116 Safari/537.36 NetType/WIFI MicroMessenger/7.0.20.1781(0x6700143B) WindowsWechat(0x63010200) ',
         'Accept': 'image/webp,image/*,*/*;q=0.8',
-        'Referer': 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid=10065',
+        'Referer': 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid='+str(floor),
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.5;q=0.4',
         'Cookie': 'wechatSESS_ID=' + str(input_session) +
