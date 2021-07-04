@@ -9,9 +9,9 @@
 from aip import AipOcr
 
 """ 你的 APPID AK SK """
-APP_ID = '23483161'
-API_KEY = 'ydyGUiAQg8Q5operuXlfz4sC'
-SECRET_KEY = 'B3lDlGvjZR1F43xu0GW8G3LiGVc6PkQB'
+APP_ID = '24367773'
+API_KEY = 'dtmPtFqc6fLY1LWGcHmbevEU'
+SECRET_KEY = '63htlbBIMrofo4ANtQkh0zOSm8d6FIsz'
 
 client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 

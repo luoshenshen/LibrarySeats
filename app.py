@@ -9,31 +9,16 @@
 import re
 import function
 import browser_tools
+import time
 
-
-def run():
-    result = function.session_get(browser_tools.index_url, browser_tools.index_header)
-    if '来选座' in result.text:
-        print('(o゜▽゜)o☆')
-        print('尝试进入选座系统')
-        print('成功进入来选座系统')
-        print('(￣▽￣)～■干杯□～(￣▽￣)')
-    else:
-        print(result.text)
-        print('进入来选座系统失败，请联系开发者email:luoshenshen@buaa.edu.cn或者重试！')
-
-    result = function.session_get(browser_tools.center_url, browser_tools.center_header)
+def run(cookie,floor,key,flag):
+    result = function.session_get(browser_tools.index_url, browser_tools.get_index_header(cookie,time.time()))
+    if '来选座' not in result.text:
+        return "进入来选座系统失败，Cookie不正确"
+    result = function.session_get(browser_tools.center_url, browser_tools.get_center_header(cookie,time.time()))
     nick = re.findall('<div class="nick">(.*)</div>', result.text)[0]
-    print('(๑•̀ㅂ•́)و✧' + '你好呀：--------------------------' + nick)
-    result = function.session_get(browser_tools.prereserve_url, browser_tools.prereserve_header)
+    result = function.session_get(browser_tools.prereserve_url, browser_tools.get_prereserve_header(cookie,time.time()))
     if nick in result.text or "预约明天的座位" in result.text:
-        print('成功进入明日预约选座')
-        print('开始准备抢座')
-        print('<(￣︶￣)↗[GO!]')
-        function.fecth(nick + '.jpg')
+        return function.fecth(cookie,floor,key,flag)
     else:
-        print('进入明日预约选座失败，请联系开发者email:luoshenshen@buaa.edu.cn或者重试！')
-
-
-if __name__ == "__main__":
-    run()
+        return "进入来选座系统失败，Cookie不正确"
