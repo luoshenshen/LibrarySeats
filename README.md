@@ -8,5 +8,5 @@
 <h6>Welcome to support, please star or fork or donate to support updates</h6>
 <h6>欢迎支持，请star或fork或捐助支持更新</h6>
 <img src="course_1.png" width="600" height="380"></img>
-<img src="course_2.png" width="600" height="330"></img>
+<img src="course_2.png" width="600" height="300"></img>
 <img src="contribut.jpg" width="410" height="410"></img>
