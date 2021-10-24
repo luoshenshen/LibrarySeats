@@ -7,6 +7,6 @@
 <h5>有钱捧个钱场，没钱捧个人场，本源程序写于2018年，详细地址：https://github.com/luoenen （系本人前账号，已弃用），期间选作系统修改较大，对于提升安全性后会不定期修复，感谢湘潭大学同学提供的动态js解密</h5>
 <h6>Welcome to support, please star or fork or donate to support updates</h6>
 <h6>欢迎支持，请star或fork或捐助支持更新</h6>
-<img src="course_1.png" width="600" height="400"></img>
-<img src="course_2.png" width="600" height="400"></img>
-<img src="contribut.jpg" width="500" height="500"></img>
+<img src="course_1.png" width="600" height="330"></img>
+<img src="course_2.png" width="600" height="330"></img>
+<img src="contribut.jpg" width="410" height="410"></img>
