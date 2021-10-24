@@ -10,10 +10,12 @@
 index_url = 'https://wechat.laixuanzuo.com/index.php/reserve/index.html'
 prereserve_url = 'https://wechat.laixuanzuo.com/index.php/prereserve/index.html'
 center_url = 'https://wechat.laixuanzuo.com/index.php/center.html'
-floor_url = 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid='
-#https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid=11447
+floor_url_api = 'https://wechat.laixuanzuo.com/index.php/reserve/layout/libid='
+#floor_url = 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid='
+#https://wechat.laixuanzuo.com/index.php/reserve/layout/libid=10073.html&1635064601
 today_url = 'https://wechat.laixuanzuo.com/index.php/reserve/get/libid='
 #https://wechat.laixuanzuo.com/index.php/reserve/get/libid=10065&ZyhTWrKQkQ=15,15&yzm=4065
+floor_tomorrow_url_api = 'https://wechat.laixuanzuo.com/index.php/reserve/layoutApi/action=prereserve_event&libid='
 tomorrow = 'https://wechat.laixuanzuo.com/index.php/prereserve/index.html'
 tomorrow_url = 'https://wechat.laixuanzuo.com/index.php/prereserve/save/libid='
 img_url = 'https://wechat.laixuanzuo.com/index.php/misc/verify.html'

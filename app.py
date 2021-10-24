@@ -53,5 +53,5 @@ class IndexHandler(tornado.web.RequestHandler):
 if __name__ == '__main__':
 
     app = tornado.web.Application([(r'/app/seat',IndexHandler)])
-    app.listen(port=8081)
+    app.listen(port=80)
     tornado.ioloop.IOLoop.current().start()

@@ -93,7 +93,7 @@ def floors(floor):
     return str(floor)
 
 def get_floor_url(url, floor):
-    return url + str(floor)
+    return url + str(floor)+".html&"
 
 def get_tomorrow_floor_url(url, floor):
     return url + str(floor)
@@ -117,11 +117,12 @@ def fecth(cookie,floor,flag):
     if flag == False:
 
         #进入楼层链接
-        url = get_floor_url(browser_tools.floor_url, floor)
+        url = get_floor_url(browser_tools.floor_url_api, floor)
         url += str(times)
         #正式进入楼层
         result = session_get(url, browser_tools.get_layout_header(cookie,lvt,lptv))
         js_result = js_code.obtain_js(result.text)
+        print(js_result)
         if len(js_result) <= 1:
             return "已选中座位或者不在选座时间!"
         request_js = js_result[1]
@@ -135,6 +136,8 @@ def fecth(cookie,floor,flag):
         for i in xys:
             keys.append(i)
         print(keys)
+        if len(keys) == 0:
+            return "来晚了！没位置了！"
         seats = random.choice(keys)
         result = ''
         #初始化百度验证码识别
@@ -167,6 +170,7 @@ def fecth(cookie,floor,flag):
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
             #抢座url
             target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm='+str(code)
+            print(target_url)
             result = str(session_get(target_url, browser_tools.get_today_header(cookie, lvt,lptv,times,floor)).text)
             if ('预定' in result) or ('退选' in result) or ('释放' in result) or ('成功' in result):
                 return result
@@ -175,13 +179,8 @@ def fecth(cookie,floor,flag):
                 seats =  random.choice(keys)
 
     else:
-        url = get_floor_url(browser_tools.floor_url, floor)
-        result = session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
-        xys = get_seat(result.text)
-        keys = []
-        for i in xys:
-            keys.append(i)
-        seats = random.choice(keys)
+        url = get_tomorrow_floor_url(browser_tools.floor_tomorrow_url_api, floor)
+        print(url)
         alive = 0
         hour, min, sec = timer.times()
         while int(hour) < int(19) and ((int(19 - hour) * 3600 + int((49 - min)) * 60 + (59 - sec)) > 0):
@@ -190,6 +189,7 @@ def fecth(cookie,floor,flag):
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
                 alive = 0
+                print("需要再等" + str((19 - int(hour))) + "小时")
             hour, min, sec = timer.times()
         while int(min) <= int(49) and (int(19 - hour) * 3600 + int((49 - min)) * 60 + (59 - sec)) > 0:
             time.sleep(0.5)
@@ -197,16 +197,25 @@ def fecth(cookie,floor,flag):
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
                 alive = 0
+                print("需要再等" + str((49 - int(min))) + "分"+ str((59 - int(sec))) + "秒")
             hour, min, sec = timer.times()
+
         #最后一次刷新
-        tomorrow_result = session_get(browser_tools.tomorrow, browser_tools.get_tomorrow_header(cookie))
+        result = session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
+        xys = get_seat(result.text)
+        keys = []
+        for i in xys:
+            keys.append(i)
+        if len(keys) == 0:
+            return "来晚了！没位置了！"
+        seats = random.choice(keys)
         # 获取js验证
-        js_result = js_code.obtain_js(tomorrow_result.text)
+        js_result = js_code.obtain_js(result.text)
         print("提前发起主动锁定...")
         while len(js_result) == 1:
-            tomorrow_result = session_get(browser_tools.tomorrow, browser_tools.get_tomorrow_header(cookie))
+            result = session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
             # 获取js验证
-            js_result = js_code.obtain_js(tomorrow_result.text)
+            js_result = js_code.obtain_js(result.text)
 
         request_js = js_result[1]
         need_js = re.findall(r"layout/(.+?).js", request_js)
