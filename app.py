@@ -11,7 +11,7 @@ import function
 import browser_tools
 import time
 
-def run(cookie,floor,key,flag):
+def run(cookie,floor,flag):
     result = function.session_get(browser_tools.index_url, browser_tools.get_index_header(cookie,time.time()))
     if '来选座' not in result.text:
         return "进入来选座系统失败，Cookie不正确"
@@ -19,6 +19,7 @@ def run(cookie,floor,key,flag):
     nick = re.findall('<div class="nick">(.*)</div>', result.text)[0]
     result = function.session_get(browser_tools.prereserve_url, browser_tools.get_prereserve_header(cookie,time.time()))
     if nick in result.text or "预约明天的座位" in result.text:
-        return function.fecth(cookie,floor,key,flag)
+        return function.fecth(cookie,floor,flag)
     else:
         return "进入来选座系统失败，Cookie不正确"
+

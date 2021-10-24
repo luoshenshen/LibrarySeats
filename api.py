@@ -36,16 +36,15 @@ class IndexHandler(tornado.web.RequestHandler):
     def post(self):
         cookie = self.get_body_argument('cookie', '')
         floor = self.get_body_argument('floor', '')
-        seat = self.get_body_argument('seat', '')
         flag = self.get_body_argument('flag', '')
         if flag == '':
             goal = True
         else:
             goal = False
         result = "未订阅或不符合选座要求"
-        if cookie == '' or floor == '' or seat == '':
+        if cookie == '' or floor == '':
             return result
-        result = app.run(cookie, floor, seat,goal)
+        result = app.run(cookie, floor,goal)
         print(result)
         cookies.append(cookie)
         Thread(target=keep_alive).start()

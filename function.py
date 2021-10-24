@@ -13,16 +13,15 @@ import re
 import js_code
 import baidu
 import timer
+import random
 from aip import AipOcr
 
 requests.packages.urllib3.disable_warnings()
 requests_with_session = requests.Session()
 
-
 def session_get(url, header):
     requests.adapters.DEFAULT_RETRIES = 5
     return requests_with_session.get(url=url, headers=header, allow_redirects=False, verify=False)
-
 
 def floors(floor):
     floor = str(floor)
@@ -90,29 +89,38 @@ def floors(floor):
         floor = str(11103)
     elif floor == "93":
         floor = str(11124)
+
     return str(floor)
 
-
 def get_floor_url(url, floor):
-    return url + str(floor) + '.html&' + str(int(time.time()))
-
+    return url + str(floor)
 
 def get_tomorrow_floor_url(url, floor):
     return url + str(floor)
 
-
 def get_seat(html):
-    xys = re.findall('data-key="(.*)" style="left:', html)
-    seats = re.findall('<em>(.*)</em>', html)
-    return xys, seats
+    xys = re.findall('<div class="grid_cell grid_1" data-key="(\d+,\d+)" style="left:', html)
+    return xys
 
+def today_img_download(url,header):
+    r = requests.get(url,stream=True,headers=header,verify=False)
+    with open('code.png', 'wb') as f:
+        f.write(r.content)
 
-def fecth(cookie,floor,key,flag):
+def fecth(cookie,floor,flag):
     floor = floors(floor)
+    # 定义进入楼层的时间
+    times = str(int(time.time()))
+    # 定义浏览器时间记录
+    lvt = str(int(times) - 1)
+    lptv = str(int(times) + 1)
     if flag == False:
-        times = time.time()
+
+        #进入楼层链接
         url = get_floor_url(browser_tools.floor_url, floor)
-        result = session_get(url, browser_tools.get_layout_header(cookie,times))
+        url += str(times)
+        #正式进入楼层
+        result = session_get(url, browser_tools.get_layout_header(cookie,lvt,lptv))
         js_result = js_code.obtain_js(result.text)
         if len(js_result) <= 1:
             return "已选中座位或者不在选座时间!"
@@ -122,41 +130,72 @@ def fecth(cookie,floor,key,flag):
         verify_code = js_code.verify_code_get(need_js[0],cookie,times)
         js = str(verify_code)
         print("选座js匹配验证码:" + verify_code)
-        xys, seats = get_seat(result.text)
-        keys = {}
-        for i, j in zip(xys, seats):
-            keys.update({str(j): str(i)})
-        key = str(key)
-        seats = keys.pop(key)
+        xys = get_seat(result.text)
+        keys = []
+        for i in xys:
+            keys.append(i)
+        print(keys)
+        seats = random.choice(keys)
         result = ''
-        while ('预定' not in result) or ('退选' not in result) or ('释放' not in result):
-            target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm='
-            result = str(session_get(target_url, browser_tools.get_today_header(cookie,times)).text)
+        #初始化百度验证码识别
+        client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
+        options = {}
+        options["detect_language"] = "true"
+        #开始选座
+        while '成功' not in result or '失败' not in result or '满' not in result:
+            #获取验证码
+            img_url = browser_tools.img_url+"?"+str(int(time.time()))
+            hr = requests.get(img_url, stream=True, headers=browser_tools.img_header_today(cookie,floor,lvt,lptv,times),
+                             verify=False, allow_redirects=False).headers
+            if 'Location' in hr.keys():
+                print("重定向")
+                img_url = hr.pop('Location')
+                word = client.webImageUrl(img_url, options)
+            else:
+                print("未重定向")
+                today_img_download(img_url,browser_tools.img_header_today(cookie,floor,lvt,lptv,times))
+                img = baidu.get_file_content('code.png')
+                word = client.basicAccurate(img)
+            #判断识别图片合法性
+            if len(word.get('words_result')) == 0:
+                continue
+            li = word.get('words_result')
+            if len(li[0]["words"]) != 4:
+                continue
+            code = li[0]["words"]
+            # 各种安全已经验证，开始抢座
+            print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
+            #抢座url
+            target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm='+str(code)
+            result = str(session_get(target_url, browser_tools.get_today_header(cookie, lvt,lptv,times,floor)).text)
             if ('预定' in result) or ('退选' in result) or ('释放' in result) or ('成功' in result):
                 return result
+            print("选座失败: 随即座位 " + seats + result + " 继续重试!")
+            if("不存在" in result):
+                seats =  random.choice(keys)
 
     else:
         url = get_floor_url(browser_tools.floor_url, floor)
-        result = session_get(url, browser_tools.get_layout_header(cookie,time.time()))
-        xys, seats = get_seat(result.text)
-        keys = {}
-        for i, j in zip(xys, seats):
-            keys.update({str(j): str(i)})
-        seats = keys.pop(key)
+        result = session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
+        xys = get_seat(result.text)
+        keys = []
+        for i in xys:
+            keys.append(i)
+        seats = random.choice(keys)
         alive = 0
         hour, min, sec = timer.times()
         while int(hour) < int(19) and ((int(19 - hour) * 3600 + int((49 - min)) * 60 + (59 - sec)) > 0):
             time.sleep(0.5)
             alive += 1
             if alive == 360:
-                session_get(url, browser_tools.get_layout_header(cookie,time.time()))
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
                 alive = 0
             hour, min, sec = timer.times()
         while int(min) <= int(49) and (int(19 - hour) * 3600 + int((49 - min)) * 60 + (59 - sec)) > 0:
             time.sleep(0.5)
             alive += 1
             if alive == 360:
-                session_get(url, browser_tools.get_layout_header(cookie,time.time()))
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
                 alive = 0
             hour, min, sec = timer.times()
         #最后一次刷新
@@ -180,10 +219,16 @@ def fecth(cookie,floor,key,flag):
         while '成功' not in result or '失败' not in result or '满' not in result:
             #获取验证码链接
             img_url = browser_tools.img_url
-            hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header(cookie)).headers
+            hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header(cookie,lvt,lptv,floor)).headers
             if 'Location' in hr.keys():
+                print("重定向")
                 img_url = hr.pop('Location')
-            word = client.webImageUrl(img_url, options)
+                word = client.webImageUrl(img_url, options)
+            else:
+                print("未重定向")
+                today_img_download(img_url, browser_tools.tomorrow_imgs_header(cookie, floor, lvt, lptv))
+                img = baidu.get_file_content('code.png')
+                word = client.basicAccurate(img)
             #判断合法性
             if len(word.get('words_result')) == 0:
                 continue
@@ -194,7 +239,9 @@ def fecth(cookie,floor,key,flag):
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
             # 各种安全已经验证，开始抢座
             target_url = browser_tools.tomorrow_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm=' + code
-            result = session_get(target_url, browser_tools.get_today_header(cookie,time.time())).text
+            print(target_url)
+            print(keys)
+            result = session_get(target_url, browser_tools.get_today_header(cookie,lvt,lptv,times,floor)).text
             print("选座结果:",result)
             if '成功' in result or '失败' in result or '满' in result:
                 return result
