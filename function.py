@@ -183,16 +183,18 @@ def fecth(cookie,floor,flag):
         print(url)
         alive = 0
         hour, min, sec = timer.times()
-        while int(hour) < int(19) and ((int(19 - hour) * 3600 + int((49 - min)) * 60 + (59 - sec)) > 0):
-            time.sleep(0.5)
+        #时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
+        while int(hour) < int(19):
+            time.sleep(0.2)
             alive += 1
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
                 alive = 0
                 print("需要再等" + str((19 - int(hour))) + "小时")
             hour, min, sec = timer.times()
-        while int(min) <= int(49) and (int(19 - hour) * 3600 + int((49 - min)) * 60 + (59 - sec)) > 0:
-            time.sleep(0.5)
+        # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制分钟 50
+        while int(min) < int(50):
+            time.sleep(0.2)
             alive += 1
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
