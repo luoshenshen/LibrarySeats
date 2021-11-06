@@ -169,6 +169,9 @@ def fecth(cookie,floor,flag,nick):
             # 各种安全已经验证，开始抢座
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
             #抢座url
+            # 如果准备预定某一个位子，把下面# 注释去掉即可（失败概率极大）,x 与 y值改成对应坐标
+            # seats = 'x,y'
+            seats = str(seats)
             target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm='+str(code)
             print(target_url)
             result = str(session_get(target_url, browser_tools.get_today_header(cookie, lvt,lptv,times,floor)).text)
@@ -250,6 +253,9 @@ def fecth(cookie,floor,flag,nick):
             code = li[0]["words"]
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
             # 各种安全已经验证，开始抢座
+            # 如果准备预定某一个位子，把下面# 注释去掉即可（失败概率极大）,x 与 y值改成对应坐标
+            # seats = 'x,y'
+            seats = str(seats)
             target_url = browser_tools.tomorrow_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm=' + code
             print(target_url)
             print(keys)
