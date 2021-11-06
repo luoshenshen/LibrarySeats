@@ -29,6 +29,10 @@ if __name__ == '__main__':
     seat = str(input(""))
     print(Fore.RED+Back.WHITE+"请输抢座标记(可选，不输入预约明天座位,按回车继续!) \n")
     flag = str(input(""))
+    if(flag == ''):
+        flag = True
+    else:
+        flag = False
     print(Fore.GREEN+Back.WHITE+api.run(cookie,floor,seat,flag))
     print(Fore.RED+Back.WHITE+"回车退出!\n")
     exit = str(input(""))
