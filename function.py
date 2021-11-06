@@ -20,7 +20,7 @@ requests.packages.urllib3.disable_warnings()
 requests_with_session = requests.Session()
 
 def session_get(url, header):
-    requests.adapters.DEFAULT_RETRIES = 5
+    requests.adapters.DEFAULT_RETRIES = 20
     return requests_with_session.get(url=url, headers=header, allow_redirects=False, verify=False)
 
 def floors(floor):
@@ -102,12 +102,12 @@ def get_seat(html):
     xys = re.findall('<div class="grid_cell grid_1" data-key="(\d+,\d+)" style="left:', html)
     return xys
 
-def today_img_download(url,header):
+def today_img_download(url,header,nick):
     r = requests.get(url,stream=True,headers=header,verify=False)
-    with open('code.png', 'wb') as f:
+    with open(nick+'.png', 'wb') as f:
         f.write(r.content)
 
-def fecth(cookie,floor,flag):
+def fecth(cookie,floor,flag,nick):
     floor = floors(floor)
     # 定义进入楼层的时间
     times = str(int(time.time()))
@@ -156,8 +156,8 @@ def fecth(cookie,floor,flag):
                 word = client.webImageUrl(img_url, options)
             else:
                 print("未重定向")
-                today_img_download(img_url,browser_tools.img_header_today(cookie,floor,lvt,lptv,times))
-                img = baidu.get_file_content('code.png')
+                today_img_download(img_url,browser_tools.img_header_today(cookie,floor,lvt,lptv,times),nick)
+                img = baidu.get_file_content(nick+'.png')
                 word = client.basicAccurate(img)
             #判断识别图片合法性
             if len(word.get('words_result')) == 0:
@@ -237,8 +237,8 @@ def fecth(cookie,floor,flag):
                 word = client.webImageUrl(img_url, options)
             else:
                 print("未重定向")
-                today_img_download(img_url, browser_tools.tomorrow_imgs_header(cookie, floor, lvt, lptv))
-                img = baidu.get_file_content('code.png')
+                today_img_download(img_url, browser_tools.tomorrow_imgs_header(cookie, floor, lvt, lptv),nick)
+                img = baidu.get_file_content(nick+'.png')
                 word = client.basicAccurate(img)
             #判断合法性
             print("验证码识别为："+word)
