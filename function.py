@@ -102,12 +102,17 @@ def get_seat(html):
     xys = re.findall('<div class="grid_cell grid_1" data-key="(\d+,\d+)" style="left:', html)
     return xys
 
+def get_my_seat(html):
+    xys = re.findall('data-key="(.*)" style="left:', html)
+    seats = re.findall('<em>(.*)</em>', html)
+    return xys, seats
+
 def today_img_download(url,header,nick):
     r = requests.get(url,stream=True,headers=header,verify=False)
     with open(nick+'.png', 'wb') as f:
         f.write(r.content)
 
-def fecth(cookie,floor,flag,nick):
+def fecth(cookie,floor,k,flag,nick):
     floor = floors(floor)
     # 定义进入楼层的时间
     times = str(int(time.time()))
@@ -132,13 +137,25 @@ def fecth(cookie,floor,flag,nick):
         js = str(verify_code)
         print("选座js匹配验证码:" + verify_code)
         xys = get_seat(result.text)
+
+        # 支持自定义抢座
+        xy, se = get_my_seat(result.text)
+        ke = {}
+        for i, j in zip(xy, se):
+            ke.update({str(j): str(i)})
+        for i in ke.keys():
+            if i != '' and i != '柱' and i != '窗':
+                print('可选座位：', i)
         keys = []
         for i in xys:
             keys.append(i)
         print(keys)
+        if (k == ''):
+            seats = random.choice(keys)
+        else:
+            seats = ke.pop(k)
         if len(keys) == 0:
             return "来晚了！没位置了！"
-        seats = random.choice(keys)
         result = ''
         #初始化百度验证码识别
         client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
@@ -171,7 +188,6 @@ def fecth(cookie,floor,flag,nick):
             #抢座url
             # 如果准备预定某一个位子，把下面# 注释去掉即可（失败概率极大）,x 与 y值改成对应坐标
             # seats = 'x,y'
-            seats = str(seats)
             target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm='+str(code)
             print(target_url)
             result = str(session_get(target_url, browser_tools.get_today_header(cookie, lvt,lptv,times,floor)).text)
@@ -213,7 +229,20 @@ def fecth(cookie,floor,flag,nick):
             keys.append(i)
         if len(keys) == 0:
             return "来晚了！没位置了！"
-        seats = random.choice(keys)
+
+        # 支持自定义抢座
+        xy, se = get_my_seat(result.text)
+        ke = {}
+        for i, j in zip(xy, se):
+            ke.update({str(j): str(i)})
+        for i in ke.keys():
+            if i != '' and i != '柱' and i != '窗':
+                print('可选座位：', i)
+        if (k == ''):
+            seats = random.choice(keys)
+        else:
+            seats = ke.pop(k)
+        seats = str(seats)
         # 获取js验证
         js_result = js_code.obtain_js(result.text)
         print("提前发起主动锁定...")
@@ -263,3 +292,5 @@ def fecth(cookie,floor,flag,nick):
             print("选座结果:",result)
             if '成功' in result or '失败' in result or '满' in result:
                 return result
+            if ("不存在" in result):
+                seats = random.choice(keys)

@@ -7,51 +7,29 @@
 @ time: 2021/6/14 10:27
 '''
 #-*- coding:utf-8 -*-
-import time
-import tornado.web
-import tornado.ioloop
 import api
-from threading import Thread
-import browser_tools
-import requests
-
-cookies = []
-
-requests.packages.urllib3.disable_warnings()
-requests_with_session = requests.Session()
-
-def keep_alive():
-
-    while 1:
-        for i in cookies:
-            print(requests_with_session.get(url='https://wechat.laixuanzuo.com/index.php/reserve/index.html',
-                                  headers=browser_tools.get_index_header(i,time.time()), allow_redirects=False, verify=False).text)
-        time.sleep(300)
-
-class IndexHandler(tornado.web.RequestHandler):
-
-    def get(self):
-        self.render("seat.html")
-
-    def post(self):
-        cookie = self.get_body_argument('cookie', '')
-        floor = self.get_body_argument('floor', '')
-        flag = self.get_body_argument('flag', '')
-        if flag == '':
-            goal = True
-        else:
-            goal = False
-        result = "未订阅或不符合选座要求"
-        if cookie == '' or floor == '':
-            return result
-        result = api.run(cookie, floor,goal)
-        print(result)
-        cookies.append(cookie)
-        Thread(target=keep_alive).start()
-        self.write(result)
-
 if __name__ == '__main__':
+    import colorama
+    from colorama import Fore, Back, Style
+    colorama.init()
+    print("""
+    ***************************************************************************************
+    *                                                                                     *
+    *                                                                                     *
+    *                                      来选座V1.0                                      *
+    *                                      @author: luoshenshen                           *
+    *                                                                                     *
+    ***************************************************************************************
+    """)
+    print(Fore.RED+Back.WHITE+"请输入WeChatID,按回车继续!\n")
+    cookie = str(input())
+    print(Fore.RED+Back.WHITE+"请输入楼层(五位数字，可以进系统楼复制链接查看libid即楼层五位数字,按回车继续!): \n")
+    floor = str(input(""))
+    print(Fore.RED+Back.WHITE+"请输座位号(可选，不输入随机安排一个空位置,按回车继续!) \n")
+    seat = str(input(""))
+    print(Fore.RED+Back.WHITE+"请输抢座标记(可选，不输入预约明天座位,按回车继续!) \n")
+    flag = str(input(""))
+    print(Fore.GREEN+Back.WHITE+api.run(cookie,floor,seat,flag))
+    print(Fore.RED+Back.WHITE+"回车退出!\n")
+    exit = str(input(""))
 
-    app = tornado.web.Application([(r'/app/seat',IndexHandler)])
-    app.listen(port=80)
-    tornado.ioloop.IOLoop.current().start()
