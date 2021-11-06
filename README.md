@@ -1,4 +1,6 @@
 # LibrarySeats
+<h1>由于便于新手使用百度OCR，导致隐私泄露被山西农业大学某同学恶意刷次数导致欠费，感谢以下同学捐助：</h1>
+<img src="contribut.jpg" width="410" height="410"></img>
 <h3>Special seat grab program for the library of Henan University of Economics and Law (to choose seats)</h3>
 <h3>河南财经政法大学图书馆抢座方案（选座）</h3>
 <h4>If you are from another university, you may need to modify the source code. Don’t worry, how to modify it has already been pointed out in the tutorial: https://space.bilibili.com/85750427</h4>
