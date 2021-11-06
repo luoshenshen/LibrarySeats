@@ -1,6 +1,6 @@
 # LibrarySeats
 <h2>因为想提供新手使用百度OCR，不慎导致隐私泄露，被山西农业大学某同学恶意刷次数导致欠费，感谢以下同学捐助：</h2>
-<img src="arrearage.png" height="200" width="400"></img>
+<img src="arrearage.png" height="200" width="250"></img>
 <img src="cost.png" height="410"></img>
 <h4><font color="blue">哔哩哔哩 id：岚风浩 捐助30元 https://space.bilibili.com/376348755</font></h4>
 <h4>哔哩哔哩 id：禅是一枝花2001 捐助30元 https://space.bilibili.com/378833275</h4>
