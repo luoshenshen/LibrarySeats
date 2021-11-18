@@ -126,7 +126,8 @@ def fecth(cookie,floor,k,flag,nick):
         flag = True
     
     if flag == False:
-        
+        url = get_floor_url(browser_tools.floor_url_api, floor)
+        url += str(times)
         alive = 0
         hour, min, sec = timer.times()
         #时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
