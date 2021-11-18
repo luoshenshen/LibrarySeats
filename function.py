@@ -120,6 +120,27 @@ def fecth(cookie,floor,k,flag,nick):
     lvt = str(int(times) - 1)
     lptv = str(int(times) + 1)
     if flag == False:
+        
+        alive = 0
+        hour, min, sec = timer.times()
+        #时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
+        while int(hour) < int(6):
+            time.sleep(0.2)
+            alive += 1
+            if alive == 360:
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
+                alive = 0
+                print("需要再等" + str((6 - int(hour))) + "小时")
+            hour, min, sec = timer.times()
+        # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制分钟 50
+        while int(min) < int(30):
+            time.sleep(0.2)
+            alive += 1
+            if alive == 360:
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
+                alive = 0
+                print("需要再等" + str((30 - int(min))) + "分"+ str((59 - int(sec))) + "秒")
+            hour, min, sec = timer.times()
 
         #进入楼层链接
         url = get_floor_url(browser_tools.floor_url_api, floor)
