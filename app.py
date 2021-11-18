@@ -27,8 +27,8 @@ if __name__ == '__main__':
     floor = str(input(""))
     print(Fore.RED+Back.WHITE+"请输座位号(可选，不输入随机安排一个空位置,按回车继续!) \n")
     seat = str(input(""))
-    print(Fore.RED+Back.WHITE+"请输抢座标记(可选，不输入预约明天座位,按回车继续!) \n")
-    flag = str(input(""))
+    #print(Fore.RED+Back.WHITE+"请输抢座标记(可选，不输入预约明天座位,按回车继续!) \n")
+    flag = ''
     if(flag == ''):
         flag = True
     else:
