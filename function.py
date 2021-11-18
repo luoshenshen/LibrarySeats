@@ -150,6 +150,7 @@ def fecth(cookie,floor,k,flag,nick):
             hour, min, sec = timer.times()
 
         #进入楼层链接
+        times = str(int(time.time()))
         url = get_floor_url(browser_tools.floor_url_api, floor)
         url += str(times)
         #正式进入楼层
