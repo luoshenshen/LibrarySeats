@@ -119,6 +119,12 @@ def fecth(cookie,floor,k,flag,nick):
     # 定义浏览器时间记录
     lvt = str(int(times) - 1)
     lptv = str(int(times) + 1)
+    hour, min, sec = timer.times()
+    if str(hour) == str(6):
+        flag = False
+    else:
+        flag = True
+    
     if flag == False:
         
         alive = 0
