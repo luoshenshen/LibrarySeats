@@ -273,7 +273,7 @@ def fecth(cookie,floor,k,flag,nick):
                 img = baidu.get_file_content(nick+'.png')
                 word = client.basicAccurate(img)
             #判断合法性
-            print("验证码识别为："+word)
+            print("验证码识别为："+str(word))
             if len(word.get('words_result')) == 0:
                 continue
             li = word.get('words_result')
