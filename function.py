@@ -112,6 +112,11 @@ def today_img_download(url,header,nick):
     with open(nick+'.png', 'wb') as f:
         f.write(r.content)
 
+def img_download(url,nick):
+    r = requests.get(url,stream=True,verify=False)
+    with open(nick+'.png', 'wb') as f:
+        f.write(r.content)
+
 def fecth(cookie,floor,k,flag,nick):
     floor = floors(floor)
     # 定义进入楼层的时间
@@ -119,25 +124,27 @@ def fecth(cookie,floor,k,flag,nick):
     # 定义浏览器时间记录
     lvt = str(int(times) - 1)
     lptv = str(int(times) + 1)
-    hour, min, sec = timer.times()
+
+    hour, min, sec= timer.times()
     if str(hour) == str(6):
-        flag = False
+        flag =  False
     else:
         flag = True
-    
+
     if flag == False:
+
         url = get_floor_url(browser_tools.floor_url_api, floor)
         url += str(times)
         alive = 0
-        hour, min, sec = timer.times()
+        hour, min, sec= timer.times()
         #时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
-        while int(hour) < int(6):
+        while int(hour) < int(6) or int(hour) > int(12):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
                 alive = 0
-                print("需要再等" + str((6 - int(hour))) + "小时")
+                print("需要再等" + str((19 - int(hour))) + "小时")
             hour, min, sec = timer.times()
         # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制分钟 50
         while int(min) < int(30):
@@ -146,11 +153,10 @@ def fecth(cookie,floor,k,flag,nick):
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
                 alive = 0
-                print("需要再等" + str((30 - int(min))) + "分"+ str((59 - int(sec))) + "秒")
-            hour, min, sec = timer.times()
+                print("需要再等" + str((49 - int(min))) + "分")
+            hour, min, sec= timer.times()
 
         #进入楼层链接
-        times = str(int(time.time()))
         url = get_floor_url(browser_tools.floor_url_api, floor)
         url += str(times)
         #正式进入楼层
@@ -199,9 +205,13 @@ def fecth(cookie,floor,k,flag,nick):
             if 'Location' in hr.keys():
                 print("重定向")
                 img_url = hr.pop('Location')
-                word = client.webImageUrl(img_url, options)
+                print(img_url)
+                img_download(img_url,nick)
+                img = baidu.get_file_content(nick+'.png')
+                word = client.basicAccurate(img)
             else:
                 print("未重定向")
+                print(img_url)
                 today_img_download(img_url,browser_tools.img_header_today(cookie,floor,lvt,lptv,times),nick)
                 img = baidu.get_file_content(nick+'.png')
                 word = client.basicAccurate(img)
@@ -241,7 +251,7 @@ def fecth(cookie,floor,k,flag,nick):
                 print("需要再等" + str((19 - int(hour))) + "小时")
             hour, min, sec = timer.times()
         # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制分钟 50
-        while int(min) < int(50):
+        while int(min) < int(1):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
@@ -282,6 +292,7 @@ def fecth(cookie,floor,k,flag,nick):
 
         request_js = js_result[1]
         need_js = re.findall(r"layout/(.+?).js", request_js)
+        print(need_js)
         verify_code = js_code.verify_code_get(need_js[0],cookie,time)
         js = str(verify_code)
         client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
@@ -295,7 +306,10 @@ def fecth(cookie,floor,k,flag,nick):
             if 'Location' in hr.keys():
                 print("重定向")
                 img_url = hr.pop('Location')
-                word = client.webImageUrl(img_url, options)
+                print(img_url)
+                img_download(img_url, nick)
+                img = baidu.get_file_content(nick+'.png')
+                word = client.basicAccurate(img)
             else:
                 print("未重定向")
                 today_img_download(img_url, browser_tools.tomorrow_imgs_header(cookie, floor, lvt, lptv),nick)
@@ -319,7 +333,7 @@ def fecth(cookie,floor,k,flag,nick):
             print(keys)
             result = session_get(target_url, browser_tools.get_today_header(cookie,lvt,lptv,times,floor)).text
             print("选座结果:",result)
-            if '成功' in result or '失败' in result or '满' in result:
+            if '成功' in result or '失败' in result or '满' in result or '已经预定' in result:
                 return result
             if ("不存在" in result):
                 seats = random.choice(keys)
