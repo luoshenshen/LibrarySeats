@@ -233,7 +233,7 @@ def fecth(cookie,floor,k,flag,nick):
             if ('预定' in result) or ('退选' in result) or ('释放' in result) or ('成功' in result):
                 return result
             print("选座失败: 随即座位 " + seats + result + " 继续重试!")
-            if("不存在" in result):
+            if("不存在" in result or "抢掉" in result):
                 seats =  random.choice(keys)
 
     else:
