@@ -1,7 +1,5 @@
 # LibrarySeats
 <h2>因为想提供新手使用百度OCR，不慎导致隐私泄露，被某同学恶意刷次数导致欠费，感谢以下同学捐助：</h2>
-<img src="arrearage.png"></img>
-<img src="cost.png"></img>
 <h4><font color="blue">哔哩哔哩 id：岚风浩 捐助50元 https://space.bilibili.com/376348755</font></h4>
 <h4>哔哩哔哩 id：禅是一枝花2001 捐助30元 https://space.bilibili.com/378833275</h4>
 <h4>哔哩哔哩 id：ZXYang7 捐助15元 https://space.bilibili.com/452008473</h4>
@@ -18,6 +16,4 @@
 <h6>欢迎支持，请star或fork或捐助支持更新</h6>
 
 <h3>如何使用：https://space.bilibili.com/85750427</h3>
-<img src="course_1.png" width="600" height="380"></img>
-<img src="course_2.png" width="600" height="300"></img>
 <img src="contribut.jpg" width="410" height="410"></img>

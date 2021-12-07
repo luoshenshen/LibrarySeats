@@ -20,8 +20,8 @@ requests.packages.urllib3.disable_warnings()
 requests_with_session = requests.Session()
 
 def session_get(url, header):
-    requests.adapters.DEFAULT_RETRIES = 20
-    return requests_with_session.get(url=url, headers=header, allow_redirects=False, verify=False)
+    requests.adapters.DEFAULT_RETRIES = 30
+    return requests_with_session.get(url=url, headers=header, allow_redirects=False, verify=False,timeout=300)
 
 def floors(floor):
     floor = str(floor)
