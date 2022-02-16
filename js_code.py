@@ -17,7 +17,8 @@ def obtain_js(html):
     href = re.compile(js, re.S).findall(html)
     return href
 
-def verify_code_get(jsname,cookie,time):
+
+def verify_code_get(jsname, cookie, time):
     '''代码不麻烦，主要是分析js花了些时间'''
     url = "https://static.wechat.laixuanzuo.com/template/theme2/cache/layout/" + jsname + ".js"
 
@@ -27,7 +28,7 @@ def verify_code_get(jsname,cookie,time):
 
     pattern_js_res = '\+"\&".*\+"\&yzm\="'
 
-    exjs = network(url,cookie,time)
+    exjs = network(url, cookie, time)
 
     funjs = re.search(pattern_js, exjs).group(0)
     funjs = funjs[19:-10]
@@ -41,5 +42,6 @@ def verify_code_get(jsname,cookie,time):
 
     return docjs.eval(resultcommond)
 
-def network(url,cookie,time):
-    return function.session_get(url=url, header=browser_tools.get_js_header(cookie,time)).text
+
+def network(url, cookie, time):
+    return function.session_get(url=url, header=browser_tools.get_js_header(cookie, time)).text

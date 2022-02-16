@@ -19,9 +19,11 @@ from aip import AipOcr
 requests.packages.urllib3.disable_warnings()
 requests_with_session = requests.Session()
 
+
 def session_get(url, header):
     requests.adapters.DEFAULT_RETRIES = 30
-    return requests_with_session.get(url=url, headers=header, allow_redirects=False, verify=False,timeout=300)
+    return requests_with_session.get(url=url, headers=header, allow_redirects=False, verify=False, timeout=300)
+
 
 def floors(floor):
     floor = str(floor)
@@ -92,32 +94,39 @@ def floors(floor):
 
     return str(floor)
 
+
 def get_floor_url(url, floor):
-    return url + str(floor)+".html&"
+    return url + str(floor) + ".html&"
+
 
 def get_tomorrow_floor_url(url, floor):
     return url + str(floor)
 
+
 def get_seat(html):
     xys = re.findall('<div class="grid_cell grid_1" data-key="(\d+,\d+)" style="left:', html)
     return xys
+
 
 def get_my_seat(html):
     xys = re.findall('data-key="(.*)" style="left:', html)
     seats = re.findall('<em>(.*)</em>', html)
     return xys, seats
 
-def today_img_download(url,header,nick):
-    r = requests.get(url,stream=True,headers=header,verify=False)
-    with open(nick+'.png', 'wb') as f:
+
+def today_img_download(url, header, nick):
+    r = requests.get(url, stream=True, headers=header, verify=False)
+    with open(nick + '.png', 'wb') as f:
         f.write(r.content)
 
-def img_download(url,nick):
-    r = requests.get(url,stream=True,verify=False)
-    with open(nick+'.png', 'wb') as f:
+
+def img_download(url, nick):
+    r = requests.get(url, stream=True, verify=False)
+    with open(nick + '.png', 'wb') as f:
         f.write(r.content)
 
-def fecth(cookie,floor,k,flag,nick):
+
+def fecth(cookie, floor, k, flag, nick):
     floor = floors(floor)
     # 定义进入楼层的时间
     times = str(int(time.time()))
@@ -125,9 +134,9 @@ def fecth(cookie,floor,k,flag,nick):
     lvt = str(int(times) - 1)
     lptv = str(int(times) + 1)
 
-    hour, min, sec= timer.times()
+    hour, min, sec = timer.times()
     if str(hour) == str(6):
-        flag =  False
+        flag = False
     else:
         flag = True
 
@@ -136,13 +145,13 @@ def fecth(cookie,floor,k,flag,nick):
         url = get_floor_url(browser_tools.floor_url_api, floor)
         url += str(times)
         alive = 0
-        hour, min, sec= timer.times()
-        #时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
+        hour, min, sec = timer.times()
+        # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
         while int(hour) < int(6) or int(hour) > int(12):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
-                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
                 print("需要再等" + str((19 - int(hour))) + "小时")
             hour, min, sec = timer.times()
@@ -151,16 +160,16 @@ def fecth(cookie,floor,k,flag,nick):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
-                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
                 print("需要再等" + str((49 - int(min))) + "分")
-            hour, min, sec= timer.times()
+            hour, min, sec = timer.times()
 
-        #进入楼层链接
+        # 进入楼层链接
         url = get_floor_url(browser_tools.floor_url_api, floor)
         url += str(times)
-        #正式进入楼层
-        result = session_get(url, browser_tools.get_layout_header(cookie,lvt,lptv))
+        # 正式进入楼层
+        result = session_get(url, browser_tools.get_layout_header(cookie, lvt, lptv))
         js_result = js_code.obtain_js(result.text)
         print(js_result)
         if len(js_result) <= 1:
@@ -168,7 +177,7 @@ def fecth(cookie,floor,k,flag,nick):
         request_js = js_result[1]
         need_js = re.findall(r"layout/(.+?).js", request_js)
         print("选座js已获取：" + need_js[0])
-        verify_code = js_code.verify_code_get(need_js[0],cookie,times)
+        verify_code = js_code.verify_code_get(need_js[0], cookie, times)
         js = str(verify_code)
         print("选座js匹配验证码:" + verify_code)
         xys = get_seat(result.text)
@@ -192,30 +201,31 @@ def fecth(cookie,floor,k,flag,nick):
         if len(keys) == 0:
             return "来晚了！没位置了！"
         result = ''
-        #初始化百度验证码识别
+        # 初始化百度验证码识别
         client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
         options = {}
         options["detect_language"] = "true"
-        #开始选座
+        # 开始选座
         while '成功' not in result or '失败' not in result or '满' not in result:
-            #获取验证码
-            img_url = browser_tools.img_url+"?"+str(int(time.time()))
-            hr = requests.get(img_url, stream=True, headers=browser_tools.img_header_today(cookie,floor,lvt,lptv,times),
-                             verify=False, allow_redirects=False).headers
+            # 获取验证码
+            img_url = browser_tools.img_url + "?" + str(int(time.time()))
+            hr = requests.get(img_url, stream=True,
+                              headers=browser_tools.img_header_today(cookie, floor, lvt, lptv, times),
+                              verify=False, allow_redirects=False).headers
             if 'Location' in hr.keys():
                 print("重定向")
                 img_url = hr.pop('Location')
                 print(img_url)
-                img_download(img_url,nick)
-                img = baidu.get_file_content(nick+'.png')
+                img_download(img_url, nick)
+                img = baidu.get_file_content(nick + '.png')
                 word = client.basicAccurate(img)
             else:
                 print("未重定向")
                 print(img_url)
-                today_img_download(img_url,browser_tools.img_header_today(cookie,floor,lvt,lptv,times),nick)
-                img = baidu.get_file_content(nick+'.png')
+                today_img_download(img_url, browser_tools.img_header_today(cookie, floor, lvt, lptv, times), nick)
+                img = baidu.get_file_content(nick + '.png')
                 word = client.basicAccurate(img)
-            #判断识别图片合法性
+            # 判断识别图片合法性
             if len(word.get('words_result')) == 0:
                 continue
             li = word.get('words_result')
@@ -224,29 +234,29 @@ def fecth(cookie,floor,k,flag,nick):
             code = li[0]["words"]
             # 各种安全已经验证，开始抢座
             print('(o゜▽゜)o☆[BINGO!]', "\tCNN卷积神经网络自动判别验证码为：", code)
-            #抢座url
+            # 抢座url
             # 如果准备预定某一个位子，把下面# 注释去掉即可（失败概率极大）,x 与 y值改成对应坐标
             # seats = 'x,y'
-            target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm='+str(code)
+            target_url = browser_tools.today_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm=' + str(code)
             print(target_url)
-            result = str(session_get(target_url, browser_tools.get_today_header(cookie, lvt,lptv,times,floor)).text)
+            result = str(session_get(target_url, browser_tools.get_today_header(cookie, lvt, lptv, times, floor)).text)
             if ('预定' in result) or ('退选' in result) or ('释放' in result) or ('成功' in result):
                 return result
             print("选座失败: 随即座位 " + seats + result + " 继续重试!")
-            if("不存在" in result or "抢掉" in result):
-                seats =  random.choice(keys)
+            if ("不存在" in result or "抢掉" in result):
+                seats = random.choice(keys)
 
     else:
         url = get_tomorrow_floor_url(browser_tools.floor_tomorrow_url_api, floor)
         print(url)
         alive = 0
         hour, min, sec = timer.times()
-        #时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
+        # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
         while int(hour) < int(19):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
-                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
                 print("需要再等" + str((19 - int(hour))) + "小时")
             hour, min, sec = timer.times()
@@ -255,12 +265,12 @@ def fecth(cookie,floor,k,flag,nick):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
-                session_get(url, browser_tools.get_tomorrow_layout_header(cookie,lvt,lptv))
+                session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
-                print("需要再等" + str((49 - int(min))) + "分"+ str((59 - int(sec))) + "秒")
+                print("需要再等" + str((49 - int(min))) + "分" + str((59 - int(sec))) + "秒")
             hour, min, sec = timer.times()
 
-        #最后一次刷新
+        # 最后一次刷新
         result = session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
         xys = get_seat(result.text)
         keys = []
@@ -293,30 +303,30 @@ def fecth(cookie,floor,k,flag,nick):
         request_js = js_result[1]
         need_js = re.findall(r"layout/(.+?).js", request_js)
         print(need_js)
-        verify_code = js_code.verify_code_get(need_js[0],cookie,time)
+        verify_code = js_code.verify_code_get(need_js[0], cookie, time)
         js = str(verify_code)
         client = AipOcr(baidu.APP_ID, baidu.API_KEY, baidu.SECRET_KEY)
         options = {}
         options["detect_language"] = "true"
         result = ''
         while '成功' not in result or '失败' not in result or '满' not in result:
-            #获取验证码链接
+            # 获取验证码链接
             img_url = browser_tools.img_url
-            hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header(cookie,lvt,lptv,floor)).headers
+            hr = session_get(img_url, header=browser_tools.tomorrow_imgs_header(cookie, lvt, lptv, floor)).headers
             if 'Location' in hr.keys():
                 print("重定向")
                 img_url = hr.pop('Location')
                 print(img_url)
                 img_download(img_url, nick)
-                img = baidu.get_file_content(nick+'.png')
+                img = baidu.get_file_content(nick + '.png')
                 word = client.basicAccurate(img)
             else:
                 print("未重定向")
-                today_img_download(img_url, browser_tools.tomorrow_imgs_header(cookie, floor, lvt, lptv),nick)
-                img = baidu.get_file_content(nick+'.png')
+                today_img_download(img_url, browser_tools.tomorrow_imgs_header(cookie, floor, lvt, lptv), nick)
+                img = baidu.get_file_content(nick + '.png')
                 word = client.basicAccurate(img)
-            #判断合法性
-            print("验证码识别为："+str(word))
+            # 判断合法性
+            print("验证码识别为：" + str(word))
             if len(word.get('words_result')) == 0:
                 continue
             li = word.get('words_result')
@@ -331,8 +341,8 @@ def fecth(cookie,floor,k,flag,nick):
             target_url = browser_tools.tomorrow_url + str(floor) + '&' + str(js) + '=' + str(seats) + '&yzm=' + code
             print(target_url)
             print(keys)
-            result = session_get(target_url, browser_tools.get_today_header(cookie,lvt,lptv,times,floor)).text
-            print("选座结果:",result)
+            result = session_get(target_url, browser_tools.get_today_header(cookie, lvt, lptv, times, floor)).text
+            print("选座结果:", result)
             if '成功' in result or '失败' in result or '满' in result or '已经预定' in result:
                 return result
             if ("不存在" in result or "抢掉" in result):
