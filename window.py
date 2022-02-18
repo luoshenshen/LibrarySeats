@@ -10,6 +10,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 import api
+from function import seat_time
 
 cookie = ''
 floor = ''
@@ -24,7 +25,8 @@ label1 = tk.Label(root, text='输入微信来选座系统Cookie:')
 label2 = tk.Label(root, text='输入微信来选座系统楼层:')
 label3 = tk.Label(root, text='输入微信来选座系统座位号:')
 label4 = tk.Label(root, text='默认明日选座,输入值则预选明日座位:')
-label5 = tk.Label(root, text='选座结果:')
+label5 = tk.Label(root, text='输入选座时间（24小时格式 eg: 19:30）:')
+label6 = tk.Label(root, text='选座结果:')
 
 comboxlist1 = ttk.Combobox(root)
 comboxlist2 = ttk.Combobox(root)
@@ -43,7 +45,9 @@ def window():
 
     label4.grid(row=3, column=0)
 
-    label5.grid(row=8, column=0)
+    label5.grid(row=4, column=0)
+
+    label6.grid(row=8, column=0)
 
     # 创建输入框
     entry1 = tk.Entry(root)
@@ -56,6 +60,9 @@ def window():
 
     entry2 = tk.Entry(root)
     entry2.grid(row=3, column=2, padx=5, pady=5)
+
+    entry3 = tk.Entry(root)
+    entry3.grid(row=4, column=2, padx=5, pady=5)
 
     # 创建按键
     def show():
@@ -82,7 +89,26 @@ def window():
         else:
             label3.config(text="输入微信来选座系统座位号:")
         print(seat)
-        flag = ''
+
+        flag = entry2.get()
+
+        if flag == '':
+            label3.config(text="默认明天:")
+        else:
+            label3.config(text="今天选座:")
+
+        seat_time = entry3.get()
+
+        if seat_time == '':
+            label5.config(text="请输入开始选作时间:")
+            return
+        else:
+            label5.config(text="输入选座时间（24小时格式 eg: 19:30）:")
+            if(":" not in seat_time):
+                label5.config(text="时间格式不正确:")
+        print(seat_time)
+
+
         if (flag == ''):
             flag = True
         else:

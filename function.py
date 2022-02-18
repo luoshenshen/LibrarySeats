@@ -15,10 +15,13 @@ import baidu
 import timer
 import random
 from aip import AipOcr
+from utils import get_seat_time
 
 requests.packages.urllib3.disable_warnings()
 requests_with_session = requests.Session()
 
+seat_time = ':'
+seat_hour, seat_minute = get_seat_time(seat_time)
 
 def session_get(url, header):
     requests.adapters.DEFAULT_RETRIES = 30
@@ -147,22 +150,22 @@ def fecth(cookie, floor, k, flag, nick):
         alive = 0
         hour, min, sec = timer.times()
         # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
-        while int(hour) < int(6) or int(hour) > int(12):
+        while int(hour) < int(seat_hour):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
-                print("需要再等" + str((19 - int(hour))) + "小时")
+                print("需要再等" + str((int(seat_hour) - int(hour))) + "小时")
             hour, min, sec = timer.times()
         # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制分钟 50
-        while int(min) < int(30):
+        while int(min) < int(seat_minute):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
-                print("需要再等" + str((49 - int(min))) + "分")
+                print("需要再等" + str((int(seat_minute) - 1 - int(min))) + "分")
             hour, min, sec = timer.times()
 
         # 进入楼层链接
@@ -252,22 +255,22 @@ def fecth(cookie, floor, k, flag, nick):
         alive = 0
         hour, min, sec = timer.times()
         # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制小时 19
-        while int(hour) < int(19):
+        while int(hour) < int(seat_hour):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
-                print("需要再等" + str((19 - int(hour))) + "小时")
+                print("需要再等" + str((int(seat_hour) - int(hour))) + "小时")
             hour, min, sec = timer.times()
         # 时间控制：小时：eg 阁下学校开始抢座时间 如：19：50 ，控制分钟 50
-        while int(min) < int(50):
+        while int(min) < int(seat_minute):
             time.sleep(0.2)
             alive += 1
             if alive == 360:
                 session_get(url, browser_tools.get_tomorrow_layout_header(cookie, lvt, lptv))
                 alive = 0
-                print("需要再等" + str((49 - int(min))) + "分" + str((59 - int(sec))) + "秒")
+                print("需要再等" + str((int(seat_minute) - 1 - int(min))) + "分" + str((59 - int(sec))) + "秒")
             hour, min, sec = timer.times()
 
         # 最后一次刷新
