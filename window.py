@@ -114,7 +114,7 @@ def window():
         else:
             flag = False
 
-        label5.config(text="选座结果: " + api.run(cookie, floor, seat, flag),
+        label6.config(text="选座结果: " + api.run(cookie, floor, seat, flag),
                       font = ('黑体',12),relief = tk.FLAT)
 
     def exit_sys():
