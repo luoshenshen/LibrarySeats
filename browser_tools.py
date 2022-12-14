@@ -20,7 +20,6 @@ tomorrow = 'https://wechat.laixuanzuo.com/index.php/prereserve/index.html'
 tomorrow_url = 'https://wechat.laixuanzuo.com/index.php/prereserve/save/libid='
 img_url = 'https://wechat.laixuanzuo.com/index.php/misc/verify.html'
 
-
 #       = 'https://wechat.laixuanzuo.com/index.php/misc/verify.html'
 def get_index_header(cookie, time):
     header = {

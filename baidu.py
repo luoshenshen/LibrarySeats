@@ -16,7 +16,6 @@ SECRET_KEY = 'SECRET_KEY: IH7Y2nTpjuuSAIHMl9YyN8buV2kQmFmW'
 
 client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
-
 def get_file_content(filePath):
     with open(filePath, 'rb') as fp:
         return fp.read()

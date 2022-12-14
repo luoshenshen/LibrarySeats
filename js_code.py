@@ -17,7 +17,6 @@ def obtain_js(html):
     href = re.compile(js, re.S).findall(html)
     return href
 
-
 def verify_code_get(jsname, cookie, time):
     '''代码不麻烦，主要是分析js花了些时间'''
     url = "https://static.wechat.laixuanzuo.com/template/theme2/cache/layout/" + jsname + ".js"
