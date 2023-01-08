@@ -18,7 +18,6 @@ ntp_server_url = 'ntp5.aliyun.com'
 cookie = ''
 floor = ''
 
-
 def get_ntp_time(ntp_server_url):
     """
     通过ntp server获取网络时间
@@ -50,6 +49,7 @@ if __name__ == '__main__':
     # print('时间已经与{}同步'.format(ntp_server_url))
     # import colorama
     from colorama import Fore, Back, Style
+
     # colorama.init()
     w.window()
     # print("""

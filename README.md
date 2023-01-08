@@ -1,4 +1,4 @@
-# LibrarySeats
+# LibrarySeats 来选座->我们去图书馆 重构中
 <h2><a href="https://www.jetbrains.com/">Thanks Jetbrains support development tools</a></h2>
 <hr>
 <h1>Special seat grab program for the library of Henan University of Economics and Law (to choose seats)</h1>

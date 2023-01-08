@@ -31,7 +31,6 @@ label6 = tk.Label(root, text='选座结果:')
 comboxlist1 = ttk.Combobox(root)
 comboxlist2 = ttk.Combobox(root)
 
-
 def window():
     root.title('微信来选座系统 LibrarySeats beta v0.1'+str(time.time()))
     root.geometry('900x600')
