@@ -11,6 +11,7 @@ import function
 import browser_tools
 import time
 
+
 def run(cookie, floor, k, flag):
     result = function.session_get(browser_tools.index_url, browser_tools.get_index_header(cookie, time.time()))
     if '来选座' not in result.text:
