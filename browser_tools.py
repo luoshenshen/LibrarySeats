@@ -20,6 +20,7 @@ tomorrow = 'https://wechat.laixuanzuo.com/index.php/prereserve/index.html'
 tomorrow_url = 'https://wechat.laixuanzuo.com/index.php/prereserve/save/libid='
 img_url = 'https://wechat.laixuanzuo.com/index.php/misc/verify.html'
 
+
 #       = 'https://wechat.laixuanzuo.com/index.php/misc/verify.html'
 def get_index_header(cookie, time):
     header = {
@@ -37,7 +38,6 @@ def get_index_header(cookie, time):
         'If-Modified': 'Thu, 01 Jan 1970 00:00:00GMT',
     }
     return header
-
 
 def get_layout_header(cookie, lvt, lpvt):
     header = {
