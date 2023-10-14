@@ -10,9 +10,9 @@ from aip import AipOcr
 
 """ 你的 APPID AK SK """
 # 被人恶意刷欠费了，现在欠费中，如果能帮你请打赏点还债
-APP_ID = '你的APP_ID: 25040399'
-API_KEY = '你的API_KEY: 4U9f0wxFKzI9c3Phvju8T4VH'
-SECRET_KEY = 'SECRET_KEY: IH7Y2nTpjuuSAIHMl9YyN8buV2kQmFmW'
+APP_ID = '你的APP_ID: '
+API_KEY = '你的API_KEY: '
+SECRET_KEY = 'SECRET_KEY: '
 
 client = AipOcr(APP_ID, API_KEY, SECRET_KEY)
 
