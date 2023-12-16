@@ -8,7 +8,6 @@
 """
 import requests
 
-
 # 避免新手半角输入有问题
 def get_seat_time(time):
     if "：" in time:
